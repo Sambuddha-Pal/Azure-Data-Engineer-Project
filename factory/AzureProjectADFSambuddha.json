@@ -1,0 +1,9 @@
+{
+	"name": "AzureProjectADFSambuddha",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9c757a9e-f3bb-4e00-b912-37213f46341e",
+		"tenantId": "95eb9cf4-267b-4c8d-b6e9-59d4193c50ea"
+	}
+}
