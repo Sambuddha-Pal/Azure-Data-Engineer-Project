@@ -106,8 +106,16 @@
 					},
 					"dataset": {
 						"referenceName": "cdc_json_DS",
-						"type": "DatasetReference"
-					}
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": {
+								"value": "concat(@{pipeline().parameters.table},'_',cdc)",
+								"type": "Expression"
+							},
+							"file": "cdc.json"
+						}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
@@ -184,9 +192,19 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "AzureSqlSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"type": "JsonSource",
+						"additionalColumns": {
+							"type": "Expression",
+							"value": "@activity('last_cdc').output"
+						},
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
 					},
 					"sink": {
 						"type": "JsonSink",
@@ -201,14 +219,22 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference"
+						"referenceName": "cdc_json_DS",
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": "concat(@{pipeline().parameters.table},'_',cdc)",
+							"file": "empty.json"
+						}
 					}
 				],
 				"outputs": [
 					{
 						"referenceName": "cdc_json_DS",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": "concat(@{pipeline().parameters.table},'_',cdc)",
+							"file": "cdc.json"
+						}
 					}
 				]
 			}
