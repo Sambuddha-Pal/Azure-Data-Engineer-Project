@@ -11,6 +11,9 @@
 			},
 			"p_file": {
 				"type": "string"
+			},
+			"p_container": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -26,7 +29,10 @@
 					"value": "@dataset().p_folder",
 					"type": "Expression"
 				},
-				"fileSystem": "bronze"
+				"fileSystem": {
+					"value": "@dataset().p_container",
+					"type": "Expression"
+				}
 			},
 			"compressionCodec": "snappy"
 		},
