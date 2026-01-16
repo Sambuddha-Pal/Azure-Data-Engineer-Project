@@ -5,7 +5,20 @@
 			{
 				"name": "SQLDBtoDataLake",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "last_cdc",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "setTime",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -17,6 +30,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select * from @{pipeline().parameters.schema}.@{pipeline().parameters.table} where @{pipeline().parameters.cdc_column}>'@{activity('last_cdc').output.firstRow.cdc}'",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -48,11 +65,85 @@
 				"outputs": [
 					{
 						"referenceName": "ParquetDynamic",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"p_folder": {
+								"value": "@pipeline().parameters.table",
+								"type": "Expression"
+							},
+							"p_file": {
+								"value": "@concat(pipeline().parameters.table,'_',variables('current_time'))",
+								"type": "Expression"
+							},
+							"p_container": "bronze"
+						}
 					}
 				]
+			},
+			{
+				"name": "last_cdc",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "cdc_json_DS",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "setTime",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "current_time",
+					"value": {
+						"value": "utcNow()",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"schema": {
+				"type": "string"
+			},
+			"table": {
+				"type": "string"
+			},
+			"cdc_column": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"current_time": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
