@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "AzureProjectADFSambuddha"
+		},
+		"AzureDataLakeStorageLS_accountKey": {
+			"value": ""
+		},
+		"AzureSqlDatabaseLS_password": {
+			"value": ""
+		},
+		"AzureDataLakeStorageLS_properties_typeProperties_url": {
+			"value": "https://projectstoragesambuddha.dfs.core.windows.net/"
+		},
+		"AzureSqlDatabaseLS_properties_typeProperties_server": {
+			"value": "azureprojectsambuddha.database.windows.net"
+		},
+		"AzureSqlDatabaseLS_properties_typeProperties_database": {
+			"value": "azureproject"
+		},
+		"AzureSqlDatabaseLS_properties_typeProperties_userName": {
+			"value": "sambuddha"
+		}
+	}
+}
